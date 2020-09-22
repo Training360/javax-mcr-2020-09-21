@@ -45,7 +45,7 @@ public class EmployeeService {
                 .stream()
                 .filter(e -> e.getId() == id)
                 .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found: " + id));
         return modelMapper.map(employee, EmployeeDto.class);
     }
 
