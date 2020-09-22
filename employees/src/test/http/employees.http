@@ -18,6 +18,14 @@ Content-Type: application/json
 "name": "John Smith"
 }
 
+### Create employee (invalid)
+POST http://localhost:8080/api/employees/
+Content-Type: application/json
+
+{
+  "name": "Aaaaaaaaaaaaaa"
+}
+
 ### Update
 PUT http://localhost:8080/api/employees/5
 Content-Type: application/json
