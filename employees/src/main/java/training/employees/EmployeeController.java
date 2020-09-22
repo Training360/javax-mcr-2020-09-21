@@ -3,7 +3,6 @@ package training.employees;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,4 +23,18 @@ public class EmployeeController {
         return employeeService.findEmployeeById(id);
     }
 
+    @PostMapping
+    public EmployeeDto createEmployee(@RequestBody CreateEmployeeCommand command) {
+        return employeeService.createEmployee(command);
+    }
+
+    @PutMapping("/{id}")
+    public EmployeeDto updateEmployee(@PathVariable("id") long id, @RequestBody UpdateEmployeeCommand command) {
+        return employeeService.updateEmployee(id, command);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteEmployee(@PathVariable("id") long id) {
+        employeeService.deleteEmployee(id);
+    }
 }

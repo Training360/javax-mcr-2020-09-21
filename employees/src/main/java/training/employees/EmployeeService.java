@@ -12,24 +12,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
-//@AllArgsConstructor
+@AllArgsConstructor
 public class EmployeeService {
 
-    private List<Employee> employees =
+    private final AtomicLong idGenerator = new AtomicLong();
+
+    private final List<Employee> employees =
             Collections.synchronizedList(
             new ArrayList<>(List.of(
-            new Employee(1L, "Jack Doe"),
-            new Employee(2L, "John Doe")
+            new Employee(idGenerator.incrementAndGet(), "Jack Doe"),
+            new Employee(idGenerator.incrementAndGet(), "John Doe")
     )));
 
     private ModelMapper modelMapper;
-
-    public EmployeeService(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
 
     public List<EmployeeDto> findEmployees(Optional<String> prefix) {
         Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
@@ -48,5 +47,30 @@ public class EmployeeService {
                 .findAny()
             .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
         return modelMapper.map(employee, EmployeeDto.class);
+    }
+
+    public EmployeeDto createEmployee(CreateEmployeeCommand command) {
+        var employee = new Employee(idGenerator.incrementAndGet(), command.getName());
+        employees.add(employee);
+        return modelMapper.map(employee, EmployeeDto.class);
+    }
+
+    public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
+        var employee = employees
+                .stream()
+                .filter(e -> e.getId() == id)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+        employee.setName(command.getName());
+        return modelMapper.map(employee, EmployeeDto.class);
+    }
+
+    public void deleteEmployee(long id) {
+        var employee = employees
+                .stream()
+                .filter(e -> e.getId() == id)
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+        employees.remove(employee);
     }
 }
