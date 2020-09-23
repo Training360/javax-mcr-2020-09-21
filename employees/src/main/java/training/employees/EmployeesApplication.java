@@ -42,12 +42,12 @@ public class EmployeesApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		jdbcTemplate.execute("create table employees " +
-				"(id bigint auto_increment, emp_name varchar(255), " +
-				"primary key (id))");
-		jdbcTemplate.execute(
-				"insert into employees(emp_name) values ('John Doe')");
-		jdbcTemplate.execute(
-				"insert into employees(emp_name) values ('Jack Doe')");
+//		jdbcTemplate.execute("create table employees " +
+//				"(id bigint auto_increment, emp_name varchar(255), " +
+//				"primary key (id))");
+//		jdbcTemplate.execute(
+//				"insert into employees(emp_name) values ('John Doe')");
+//		jdbcTemplate.execute(
+//				"insert into employees(emp_name) values ('Jack Doe')");
 	}
 }

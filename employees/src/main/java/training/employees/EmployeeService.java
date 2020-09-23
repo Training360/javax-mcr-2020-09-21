@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,33 +22,35 @@ public class EmployeeService {
 
     private ModelMapper modelMapper;
 
-    private EmployeesDao employeesDao;
+    private EmployeesRepository repo;
 
     public List<EmployeeDto> findEmployees(Optional<String> prefix) {
         Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
 
-        return modelMapper.map(employeesDao.listEmployees(),
+        return modelMapper.map(repo.findAll(),
                 targetListType);
     }
 
     public EmployeeDto findEmployeeById(long id) {
 
 
-        return modelMapper.map(employeesDao.findEmployeeById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)), EmployeeDto.class);
+        return modelMapper.map(repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)), EmployeeDto.class);
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
         var employee = new Employee(command.getName());
-        employeesDao.createEmployee(employee);
+        repo.save(employee);
         return modelMapper.map(employee, EmployeeDto.class);
     }
 
+    @Transactional
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
-        employeesDao.updateEmployee(id, command.getName());
+        var employee = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+        employee.setName(command.getName());
         return modelMapper.map(new Employee(id, command.getName()), EmployeeDto.class);
     }
 
     public void deleteEmployee(long id) {
-        employeesDao.deleteEmployee(id);
+        repo.deleteById(id);
     }
 }
