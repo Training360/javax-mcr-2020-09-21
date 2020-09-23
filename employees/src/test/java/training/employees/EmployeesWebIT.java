@@ -34,7 +34,7 @@ public class EmployeesWebIT {
     @Test
     public void testListEmployees() throws Exception {
         when(employeeService.findEmployees(any()))
-                .thenReturn(List.of(new EmployeeDto(1L, "John Doe Tet"),
+                .thenReturn(List.of(new EmployeeDto(1L, "John Doe Test"),
                         new EmployeeDto(2L, "Jack Doe")));
 
         mockMvc.perform(get("/api/employees"))

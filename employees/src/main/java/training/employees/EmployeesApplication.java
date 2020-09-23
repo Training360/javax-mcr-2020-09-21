@@ -14,11 +14,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @EnableConfigurationProperties(EmployeeProperties.class)
 public class EmployeesApplication implements CommandLineRunner {
 
-	private final JdbcTemplate jdbcTemplate;
-
-	public EmployeesApplication(JdbcTemplate jdbcTemplate) {
-		this.jdbcTemplate = jdbcTemplate;
-	}
+//	private final JdbcTemplate jdbcTemplate;
+//
+//	public EmployeesApplication(JdbcTemplate jdbcTemplate) {
+//		this.jdbcTemplate = jdbcTemplate;
+//	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(EmployeesApplication.class, args);
