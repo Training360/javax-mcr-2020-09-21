@@ -19,58 +19,35 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class EmployeeService {
 
-    private final AtomicLong idGenerator = new AtomicLong();
-
-    private final List<Employee> employees =
-            Collections.synchronizedList(
-            new ArrayList<>(List.of(
-            new Employee(idGenerator.incrementAndGet(), "Jack Doe"),
-            new Employee(idGenerator.incrementAndGet(), "John Doe")
-    )));
-
     private ModelMapper modelMapper;
+
+    private EmployeesDao employeesDao;
 
     public List<EmployeeDto> findEmployees(Optional<String> prefix) {
         Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
-        var filtered = employees.stream()
-                .filter(e -> prefix.isEmpty() || e.getName().toLowerCase().startsWith(prefix.get().toLowerCase()))
-                .collect(Collectors.toList());
 
-        return modelMapper.map(filtered,
+        return modelMapper.map(employeesDao.listEmployees(),
                 targetListType);
     }
 
     public EmployeeDto findEmployeeById(long id) {
-        var employee = employees
-                .stream()
-                .filter(e -> e.getId() == id)
-                .findAny()
-            .orElseThrow(() -> new EmployeeNotFoundException("Employee not found: " + id));
-        return modelMapper.map(employee, EmployeeDto.class);
+
+
+        return modelMapper.map(employeesDao.findEmployeeById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)), EmployeeDto.class);
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
-        var employee = new Employee(idGenerator.incrementAndGet(), command.getName());
-        employees.add(employee);
+        var employee = new Employee(command.getName());
+        employeesDao.createEmployee(employee);
         return modelMapper.map(employee, EmployeeDto.class);
     }
 
     public EmployeeDto updateEmployee(long id, UpdateEmployeeCommand command) {
-        var employee = employees
-                .stream()
-                .filter(e -> e.getId() == id)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
-        employee.setName(command.getName());
-        return modelMapper.map(employee, EmployeeDto.class);
+        employeesDao.updateEmployee(id, command.getName());
+        return modelMapper.map(new Employee(id, command.getName()), EmployeeDto.class);
     }
 
     public void deleteEmployee(long id) {
-        var employee = employees
-                .stream()
-                .filter(e -> e.getId() == id)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
-        employees.remove(employee);
+        employeesDao.deleteEmployee(id);
     }
 }
