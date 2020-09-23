@@ -24,6 +24,8 @@ public class EmployeeService {
 
     private EmployeesRepository repo;
 
+    private AddressesGatewayService addressesGatewayService;
+
     public List<EmployeeDto> findEmployees(Optional<String> prefix) {
         Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
 
@@ -33,8 +35,10 @@ public class EmployeeService {
 
     public EmployeeDto findEmployeeById(long id) {
 
-
-        return modelMapper.map(repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id)), EmployeeDto.class);
+        var employee = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found: " + id));
+        var dto = modelMapper.map(employee, EmployeeDto.class);
+        dto.setAddress(addressesGatewayService.getAddressByName(employee.getName()));
+        return dto;
     }
 
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {

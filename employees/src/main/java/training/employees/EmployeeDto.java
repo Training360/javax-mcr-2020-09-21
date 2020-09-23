@@ -12,4 +12,11 @@ public class EmployeeDto {
     private Long id;
 
     private String name;
+
+    private Address address;
+
+    public EmployeeDto(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }
