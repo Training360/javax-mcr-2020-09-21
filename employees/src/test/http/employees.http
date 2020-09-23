@@ -1,3 +1,7 @@
+### Hello
+
+GET http://localhost:8080/api/hello
+
 ### List all employees
 GET http://localhost:8080/api/employees/
 Accept: application/json
@@ -39,3 +43,19 @@ DELETE http://localhost:8080/api/employees/1
 
 ### Not found
 GET http://localhost:8080/api
+
+###Shotdown
+
+POST http://localhost:8080/actuator/shutdown
+
+### Get log
+
+GET http://localhost:8080/actuator/loggers/training.employees
+
+#### Set logging
+POST http://localhost:8080/actuator/loggers/training.employees
+Content-Type: application/json
+
+{
+  "configuredLevel": "DEBUG"
+}

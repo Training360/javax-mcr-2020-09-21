@@ -5,10 +5,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jms.support.converter.MappingJackson2MessageConverter;
+import org.springframework.jms.support.converter.MessageConverter;
+
+import java.util.Map;
 
 @SpringBootApplication
 @EnableConfigurationProperties(EmployeeProperties.class)
@@ -49,5 +55,20 @@ public class EmployeesApplication implements CommandLineRunner {
 //				"insert into employees(emp_name) values ('John Doe')");
 //		jdbcTemplate.execute(
 //				"insert into employees(emp_name) values ('Jack Doe')");
+	}
+
+	@Bean
+	public MessageConverter messageConverter(ObjectMapper objectMapper){
+		MappingJackson2MessageConverter converter =
+				new MappingJackson2MessageConverter();
+		converter.setTypeIdPropertyName("_typeId");
+		converter.setTypeIdMappings(
+				Map.of("CreateEventCommand", EmployeeHasCreatedMessage.class));
+		return converter;
+	}
+
+	@Bean
+	public HttpTraceRepository httpTraceRepository() {
+		return new InMemoryHttpTraceRepository();
 	}
 }

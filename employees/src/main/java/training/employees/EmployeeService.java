@@ -26,6 +26,8 @@ public class EmployeeService {
 
     private AddressesGatewayService addressesGatewayService;
 
+    private EventStoreGatewayService eventStoreGatewayService;
+
     public List<EmployeeDto> findEmployees(Optional<String> prefix) {
         Type targetListType = new TypeToken<List<EmployeeDto>>() {}.getType();
 
@@ -44,6 +46,7 @@ public class EmployeeService {
     public EmployeeDto createEmployee(CreateEmployeeCommand command) {
         var employee = new Employee(command.getName());
         repo.save(employee);
+        eventStoreGatewayService.sendEvent("Employee has been created: " + command.getName());
         return modelMapper.map(employee, EmployeeDto.class);
     }
 
